@@ -69,5 +69,8 @@
   "addPhoto": "Add Photo",
   "chooseFromLibrary": "Choose from Library",
   "takePhoto": "Take Photo",
-  "removePhoto": "Remove Photo"
+  "removePhoto": "Remove Photo",
+  "storeRecoveryTitle": "There's been an error",
+  "storeRecoveryBody": "This is a known issue and we are working on fixing it. In the meantime, you will have to write your name and phone number again.",
+  "storeRecoveryButton": "Start Recovery"
 }

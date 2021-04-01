@@ -36,6 +36,7 @@ export interface ChooseCreateAccountAction {
 }
 export interface ChooseRestoreAccountAction {
   type: Actions.CHOOSE_RESTORE_ACCOUNT
+  recoveringFromStoreWipe: boolean
 }
 
 export interface CancelCreateOrRestoreAccountAction {
@@ -149,6 +150,7 @@ export interface SetRetryVerificationWithFornoAction {
 export interface ClearStoredAccountAction {
   type: Actions.CLEAR_STORED_ACCOUNT
   account: string
+  softDelete: boolean
 }
 
 export interface UpdateDailyLimitAction {
@@ -192,9 +194,12 @@ export function chooseCreateAccount(): ChooseCreateAccountAction {
   }
 }
 
-export function chooseRestoreAccount(): ChooseRestoreAccountAction {
+export function chooseRestoreAccount(
+  recoveringFromStoreWipe: boolean = false
+): ChooseRestoreAccountAction {
   return {
     type: Actions.CHOOSE_RESTORE_ACCOUNT,
+    recoveringFromStoreWipe,
   }
 }
 
@@ -326,9 +331,13 @@ export const setUserContactDetails = (
   thumbnailPath,
 })
 
-export const clearStoredAccount = (account: string): ClearStoredAccountAction => ({
+export const clearStoredAccount = (
+  account: string,
+  softDelete: boolean = false
+): ClearStoredAccountAction => ({
   type: Actions.CLEAR_STORED_ACCOUNT,
   account,
+  softDelete,
 })
 
 export const updateCusdDailyLimit = (newLimit: number): UpdateDailyLimitAction => ({

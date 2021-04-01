@@ -17,6 +17,7 @@ import ValoraAnalytics from 'src/analytics/ValoraAnalytics'
 import {
   formatBackupPhraseOnEdit,
   formatBackupPhraseOnSubmit,
+  getStoredMnemonic,
   isValidBackupPhrase,
 } from 'src/backup/utils'
 import CodeInput, { CodeInputStatus } from 'src/components/CodeInput'
@@ -32,6 +33,7 @@ import TopBarTextButtonOnboarding from 'src/onboarding/TopBarTextButtonOnboardin
 import UseBackToWelcomeScreen from 'src/onboarding/UseBackToWelcomeScreen'
 import { RootState } from 'src/redux/reducers'
 import { isAppConnected } from 'src/redux/selectors'
+import { getWalletAsync } from 'src/web3/contracts'
 
 const AVERAGE_WORD_WIDTH = 80
 const AVERAGE_SEED_WIDTH = AVERAGE_WORD_WIDTH * 24
@@ -51,6 +53,7 @@ interface DispatchProps {
 interface StateProps {
   isImportingWallet: boolean
   connected: boolean
+  isRecoveringFromStoreWipe: boolean
 }
 
 type OwnProps = StackScreenProps<StackParamList, Screens.ImportWallet>
@@ -61,6 +64,7 @@ const mapStateToProps = (state: RootState): StateProps => {
   return {
     isImportingWallet: state.imports.isImportingWallet,
     connected: isAppConnected(state),
+    isRecoveringFromStoreWipe: state.account.recoveringFromStoreWipe,
   }
 }
 
@@ -90,10 +94,24 @@ export class ImportWallet extends React.Component<Props, State> {
   componentDidMount() {
     ValoraAnalytics.track(OnboardingEvents.wallet_import_start)
     this.props.navigation.addListener('focus', this.checkCleanBackupPhrase)
+
+    if (this.props.isRecoveringFromStoreWipe) {
+      this.autocompleteSavedMnemonic()
+    }
   }
 
   componentWillUnmount() {
     this.props.navigation.removeListener('focus', this.checkCleanBackupPhrase)
+  }
+
+  async autocompleteSavedMnemonic() {
+    const wallet = await getWalletAsync()
+    const account = wallet?.getAccounts()[0]
+    const mnemonic = await getStoredMnemonic(account)
+    if (mnemonic) {
+      this.setState({ backupPhrase: mnemonic })
+      this.onPressRestore()
+    }
   }
 
   checkCleanBackupPhrase = () => {

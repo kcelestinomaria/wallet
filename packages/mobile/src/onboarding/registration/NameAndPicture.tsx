@@ -30,6 +30,7 @@ function NameAndPicture({ navigation }: Props) {
   const cachedName = useTypedSelector((state) => state.account.name)
   const picture = useTypedSelector((state) => state.account.pictureUri)
   const choseToRestoreAccount = useTypedSelector((state) => state.account.choseToRestoreAccount)
+  const recoveringFromStoreWipe = useTypedSelector((state) => state.account.recoveringFromStoreWipe)
   const dispatch = useDispatch()
 
   const { t } = useTranslation(Namespaces.nuxNamePin1)
@@ -48,7 +49,11 @@ function NameAndPicture({ navigation }: Props) {
   }, [navigation, choseToRestoreAccount])
 
   const goToNextScreen = () => {
-    navigate(Screens.PincodeSet)
+    if (recoveringFromStoreWipe) {
+      navigate(Screens.ImportWallet)
+    } else {
+      navigate(Screens.PincodeSet)
+    }
   }
 
   const onPressContinue = () => {
